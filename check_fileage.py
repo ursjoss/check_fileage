@@ -4,10 +4,12 @@ import os, sys, datetime, stat, time
 
 from stat import *
 
-version = "16th April 2007"
+version = "21th February 2017"
 #########################################################################################
 #  Author:  Craig Rayner
 #  28th February 2007
+#  Author:  Urs Joss
+#  21th February 2017 - added options -x -X
 #########################################################################################
 
 
@@ -42,6 +44,18 @@ def getopts(argv):
 		elif argv[0] == '--datetype':
 			opts['-d'] = argv[1]
 			argv = argv[2:]
+		elif argv[0] == '-x':
+			opts['-x'] = True;
+			argv = argv[1:]
+		elif argv[0] == '--fail-on-not-exists':
+			opts['-x'] = True
+			argv = argv[1:]
+		elif argv[0] == '-X':
+			opts['-x'] = False;
+			argv = argv[1:]
+		elif argv[0] == '--ok-on-not-exists':
+			opts['-x'] = False
+			argv = argv[1:]
 		elif argv[0] == '-h':
 			PrintHelp()
 			argv = argv[1:]
@@ -81,6 +95,10 @@ def PrintHelp():
             The age of the file in minutes to generate a warning notification.
          -c, --critical
             The age of the file in minutes to generate a critical notification.
+         -x, --fail-on-not-exists
+            Returns WARN if the file does not exist.
+         -X, --ok-on-not-exists
+            Returns OK if the file does not exist.
 	 -V, --version
 	    State the Version
 
@@ -150,8 +168,18 @@ if __name__ == '__main__':
                                 filename = filename[2:]
                                 filename = filename.replace("\\", "/")
                         filename = os.path.basename(filename)
-                        print 'Unknown: System Error - Unable to access the file ' + filename
-                        sys.exit(3)
+                        if myargs.has_key('-x'):
+                                if bool(myargs['-x']):
+                                        exitstate=2
+                                        exitmessage = 'Critical: ' + filename + ' does not exist.\n'
+                                else:
+                                        exitstate=0
+                                        exitmessage = 'OK: ' + filename + ' does not exist.\n'
+                                print exitmessage
+                                sys.exit(exitstate)
+                        else:
+                                print 'Unknown: System Error - Unable to access the file ' + filename
+                                sys.exit(3)
         else:
                 print 'The file name was not set.  See check_fileage.py --help'
                 PrintHelp()
