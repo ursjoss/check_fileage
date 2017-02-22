@@ -133,6 +133,7 @@ if __name__ == '__main__':
                 print 'The critical time is not set.  See check_fileage.py --help'
                 PrintHelp()
                 sys.exit(3)
+        service = 'FILE '
 	if myargs.has_key('-f'):
 		try:
                         filestat = os.stat(myargs['-f'])
@@ -153,14 +154,14 @@ if __name__ == '__main__':
                                 filename = filename[2:]
                                 filename = filename.replace("\\", "/")
                         filename = os.path.basename(filename)
-                        exitmessage = 'OK: ' + filename + ' has a ' + descriptive + ' date of ' + fileage + '\n'
+                        exitmessage = 'OK: ' + filename + ' has a ' + descriptive + ' date of ' + fileage
                         if today > filedate + warning:
                                 exitstate = 1
-                                exitmessage = 'Warning: ' + exitmessage[4:]
+                                exitmessage = 'WARNING: ' + exitmessage[4:]
                         if today > filedate + critical:
                                 exitstate = 2
-                                exitmessage = 'Critical: ' + exitmessage[9:]
-                        print exitmessage
+                                exitmessage = 'CRITICAL: ' + exitmessage[9:]
+                        print service + exitmessage
                         sys.exit(exitstate)
                 except OSError:
                         filename = myargs['-f']
@@ -171,14 +172,14 @@ if __name__ == '__main__':
                         if myargs.has_key('-x'):
                                 if bool(myargs['-x']):
                                         exitstate=2
-                                        exitmessage = 'Critical: ' + filename + ' does not exist.\n'
+                                        exitmessage = 'CRITICAL: ' + filename + ' does not exist.'
                                 else:
                                         exitstate=0
-                                        exitmessage = 'OK: ' + filename + ' does not exist.\n'
-                                print exitmessage
+                                        exitmessage = 'OK: ' + filename + ' does not exist.'
+                                print service + exitmessage
                                 sys.exit(exitstate)
                         else:
-                                print 'Unknown: System Error - Unable to access the file ' + filename
+                                print service + 'UNKNOWN: System Error - Unable to access the file ' + filename
                                 sys.exit(3)
         else:
                 print 'The file name was not set.  See check_fileage.py --help'
